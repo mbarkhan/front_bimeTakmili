@@ -1,87 +1,86 @@
 "use client";
 
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { RegList } from "@/type/user";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function RegListByUserPage() {
-  const [pcode, setPcode] = useState("");
   const [records, setRecords] = useState<RegList[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
 
   const fetchRecords = async () => {
-    if (!pcode) {
-      alert("کد پرسنلی را وارد کنید");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login"); // اگر توکن وجود نداشت، به صفحه لاگین منتقل شود
       return;
     }
-    setLoading(true);
+
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/reglist/user/${pcode}`,
-        {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
-      );
-      if (!res.ok) throw new Error("خطا در دریافت داده");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/mylist`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch data");
+
       const data = await res.json();
       setRecords(Array.isArray(data) ? data : [data]);
     } catch (error) {
-      console.error(error);
-      alert("خطا در بارگذاری داده‌ها");
+      console.error("خطا در واکشی اطلاعات:", error);
+      alert("خطا در دریافت اطلاعات ثبت‌نام.");
     } finally {
       setLoading(false);
     }
-    console.log(records)
   };
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold">لیست رکوردهای کاربر</h1>
+      <h2 className="text-xl font-bold border-b pb-2 text-blue-700">ثبت‌نام بیمه تکمیلی من</h2>
 
-      <div className="flex gap-4">
-        <Input
-          placeholder="کد پرسنلی..."
-          value={pcode}
-          onChange={(e) => setPcode(e.target.value)}
-        />
-        <Button onClick={fetchRecords} disabled={loading}>
-          {loading ? "در حال جستجو..." : "جستجو"}
-        </Button>
-      </div>
-
-      <Card>
+      <Card className="shadow-md">
         <CardContent className="overflow-x-auto">
           {loading ? (
-            <p className="p-4">در حال بارگذاری...</p>
+            <p className="p-4 animate-pulse text-gray-500">در حال بارگذاری...</p>
           ) : records.length === 0 ? (
-            <p className="p-4">رکوردی یافت نشد</p>
+            <p className="p-4 text-red-600">رکوردی یافت نشد.</p>
           ) : (
             <table className="min-w-full text-sm border mt-4">
-              <thead>
-                <tr className="bg-gray-100">
+              <thead className="bg-blue-100 text-blue-900">
+                <tr>
                   <th className="border p-2">کد پرسنلی</th>
                   <th className="border p-2">نام</th>
                   <th className="border p-2">نام خانوادگی</th>
                   <th className="border p-2">کد ملی</th>
                   <th className="border p-2">شرکت</th>
-                  {/* بقیه فیلدهای reglist را هم می‌توان اضافه کرد */}
                 </tr>
               </thead>
               <tbody>
-                {records.map((r, idx) => (
-                  <tr key={idx}>
-                    <td className="border p-2">{r.userPcode}</td>
-                    <td className="border p-2">{r.name}</td>
-                    <td className="border p-2">{r.family}</td>
-                    <td className="border p-2">{r.nationalCode}</td>
-                    <td className="border p-2">{r.companyName}</td>
-                  </tr>
-                ))}
+                <AnimatePresence>
+                  {records.map((r, idx) => (
+                    <motion.tr
+                      key={idx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <td className="border p-2">{r.userPcode}</td>
+                      <td className="border p-2">{r.name}</td>
+                      <td className="border p-2">{r.family}</td>
+                      <td className="border p-2">{r.nationalCode}</td>
+                      <td className="border p-2">{r.companyName}</td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
               </tbody>
             </table>
           )}
