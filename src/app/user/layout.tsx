@@ -87,14 +87,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {/* Menu */}
                 <nav className="space-y-2 mt-6">
                   <Link
-                    href="/dashboard"
+                    href="/user/dashboard"
                     className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
                   >
                     <Shield size={18} className="text-blue-600" />
                     ثبت‌نام بیمه تکمیلی
                   </Link>
                   <Link
-                    href="/changepass"
+                    href="/dashboard"
                     className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
                   >
                     <Lock size={18} className="text-green-600" />

@@ -40,7 +40,7 @@ export interface RegList{
 	bankCode       :  number ;
 	bankAccount    :  string ;
 	shaba           : string ;
-	bankAccountTp   : string ;
+	bankAccountTp   : number ;
 	bankAccountOwner: string ;
 	mainPersonelCode:  string 
 	mainNationalCode  : string ;
