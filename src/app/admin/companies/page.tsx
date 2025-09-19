@@ -1,5 +1,7 @@
 "use client";
 
+import { companyTypes } from "@/types/regTypes";
+import { Edit2, Edit3, FileEdit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Company = {
@@ -8,12 +10,6 @@ type Company = {
   name: string;
   description: string;
   active: boolean;
-};
-
-const companyTypes: Record<number, string> = {
-  1: "قراردادی - مدت معین",
-  2: "تأمین نیرو",
-  3: "پیمانکار حجمی",
 };
 
 export default function CompanyListPage() {
@@ -35,7 +31,8 @@ export default function CompanyListPage() {
       },
     });
     const data = await res.json();
-    setCompanies(data);
+    const sortedData = [...data].sort((a, b) => a.id - b.id);
+    setCompanies(sortedData);
     setLoading(false);
   };
 
@@ -152,7 +149,7 @@ export default function CompanyListPage() {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-1 text-gray-700">شرح</label>
+          <label className="block text-sm font-medium text-gray-700">شرح</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -173,12 +170,12 @@ export default function CompanyListPage() {
 
         {error && <p className="text-red-600 text-sm md:col-span-2">{error}</p>}
 
-        <div className="md:col-span-2">
+        <div className="flex justify-center md:col-span-2">
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition"
+            className="flex w-44 justify-center bg-blue-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition"
           >
-            {editingId ? "ویرایش شرکت" : "ثبت شرکت"}
+            {editingId ? "ویرایش " : "ثبت"}
           </button>
 
           {editingId && (
@@ -191,9 +188,9 @@ export default function CompanyListPage() {
                 setDescription("");
                 setActive(true);
               }}
-              className="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 rounded-lg transition mt-2"
+              className="flex w-44 justify-center bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 rounded-lg transition "
             >
-              انصراف از ویرایش
+              انصراف
             </button>
           )}
         </div>
@@ -210,7 +207,7 @@ export default function CompanyListPage() {
           <table className="min-w-full text-sm text-right border border-gray-300">
             <thead className="bg-gray-200 text-gray-700">
               <tr>
-                <th className="px-4 py-2 border">ردیف</th>
+                <th className="px-4 py-2 border">شناسه</th>
                 <th className="px-4 py-2 border">نام شرکت</th>
                 <th className="px-4 py-2 border">نوع</th>
                 <th className="px-4 py-2 border">شرح</th>
@@ -243,13 +240,13 @@ export default function CompanyListPage() {
                       }}
                       className="text-blue-600 hover:underline text-sm"
                     >
-                      ویرایش
+                      <FileEdit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(c.id)}
                       className="text-red-600 hover:underline text-sm"
                     >
-                      حذف
+                     <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>

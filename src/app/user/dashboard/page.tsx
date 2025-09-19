@@ -164,12 +164,27 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         return;
         }
        
-        familyMembers.forEach((fm)=>{
-          if (fm.ID<0) fm.ID=0;  
-          fm.regConfirmed=true; }) 
-        mainInsured[0].regConfirmed=true;
-
         const allRecords = [...mainInsured, ...familyMembers];
+
+        allRecords.forEach((r)=>{
+          if(r.ID<0) r.ID=0;
+          r.userPcode =r.mainPersonelCode = personalCode ?? "";
+          r.mainNationalCode =r.shenasname = r.nationalCode;
+          r.phoneNum = mainInsured[0].mobileNum;
+          r.empGroupCode = empGroup;
+          r.bankCode=mainInsured[0].bankCode;
+          r.bankAccountTp = accountType;
+          r.bankAccountOwner =mainInsured[0].bankAccountOwner;
+          r.requestReason = 23;
+          r.empType = 1;
+          r.empDate=mainInsured[0].empDate;
+          r.bankAccount=mainInsured[0].bankAccount;
+          r.shaba=mainInsured[0].shaba;
+          r.preInsurance=0;
+          r.coverMonths=mainInsured[0].coverMonths;
+          r.companyName=mainInsured[0].companyName;
+          r.regConfirmed=true;
+        })  
 
         try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/update`, {

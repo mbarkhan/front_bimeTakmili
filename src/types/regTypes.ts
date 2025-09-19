@@ -119,3 +119,9 @@ export const preInsurance: OptionType[]=[
   {key:5, name:"ایران"},
   {key:0, name:"سایر"}
 ];
+
+export const companyTypes: Record<number, string> = {
+  1: "قراردادی - مدت معین",
+  2: "تأمین نیرو",
+  3: "پیمانکار حجمی",
+};

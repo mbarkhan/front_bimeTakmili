@@ -1,8 +1,8 @@
-import Link from "next/link";
+//import Link from "next/link";
 
 export default function AdminDashboard() {
   return (
-    <div className="flex flex-col items-center gap-4 max-w-xs mx-auto mt-10">
+   /* <div className="flex flex-col items-center gap-4 max-w-xs mx-auto mt-10">
     
     <Link href="/admin/companies"
        className="w-full block bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold text-center">
@@ -23,10 +23,12 @@ export default function AdminDashboard() {
       <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold">
          لیست افراد تبعی
       </button>
-      </Link>
-
-      
+      </Link>    
      
-    </div>
+    </div>*/
+<div> 
+  <h6 className="flex justify-center text-center"> صفحه اصلی مدیر در حال طراحی و توسعه است</h6>
+</div>
+
   );
 }
