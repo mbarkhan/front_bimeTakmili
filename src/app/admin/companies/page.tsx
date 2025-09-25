@@ -112,8 +112,8 @@ export default function CompanyListPage() {
 
   return (
     <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-md mt-10" dir="rtl">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-700">
-        ثبت شرکت جدید
+      <h2 className="text-lg font-bold mb-6 text-center text-gray-700">
+         مدیریت فهرست شرکت ها
       </h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
@@ -196,7 +196,7 @@ export default function CompanyListPage() {
         </div>
       </form>
 
-      <h3 className="text-xl font-semibold mb-4">لیست شرکت‌ها</h3>
+      <h3 className="text-xl font-semibold mb-4">فهرست شرکت‌ها</h3>
 
       {loading ? (
         <p className="text-center text-gray-500">در حال بارگذاری...</p>

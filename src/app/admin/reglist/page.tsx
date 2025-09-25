@@ -4,13 +4,14 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RegList } from "@/types/user";
+import { RegList, Company } from "@/types/user";
 import * as XLSX from "xlsx";
 
 export default function RegisterListPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [records, setRecords] = useState<RegList[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [companyFilter, setCompanyFilter] = useState<string>("");
@@ -96,7 +97,6 @@ export default function RegisterListPage() {
       "بیمه قبلی": r.preInsurance,
       "تعداد ماه پوشش": r.coverMonths,
       "شرکت": r.companyName,
-      "ثبت نام شده": r.regConfirmed,
     }));
 
     const ws = XLSX.utils.json_to_sheet(mappedRecords);
@@ -171,24 +171,24 @@ export default function RegisterListPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold">لیست ثبت‌نام بیمه تکمیلی</h1>
+      <h1 className="text-xl font-bold">فهرست ثبت‌نام بیمه تکمیلی</h1>
 
       <div className="flex flex-col md:flex-row gap-4">
         <Input type="file" accept=".csv" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-        <Button onClick={handleUpload} disabled={!file || uploading}>
+        <Button className="bg-cyan-300 hover:bg-cyan-500 text-black" onClick={handleUpload} disabled={!file || uploading}>
           {uploading ? "در حال آپلود..." : "آپلود فایل CSV"}
         </Button>
-        <Button onClick={handleExportExcel}>خروجی Excel</Button>
+        <Button className="bg-lime-300 hover:bg-lime-600 text-black" onClick={handleExportExcel}>خروجی Excel</Button>
       </div>
-
+      
+      <div className="flex gap-4">
       <Input
-        placeholder="جستجو در اطلاعات..."
+        className="flex w-1/4" placeholder="جستجو در اطلاعات..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-
       <select
-        className="border p-2 rounded"
+        className="flex w-1/4 border p-2 rounded"
         value={companyFilter}
         onChange={(e) => setCompanyFilter(e.target.value)}
       >
@@ -200,7 +200,8 @@ export default function RegisterListPage() {
         ))}
       </select>
 
-      <p className="text-sm mt-2">تعداد رکوردها: {filteredRecords.length}</p>
+      <p className="text-sm text-gray-600 mt-2">تعداد رکوردها: {filteredRecords.length}</p>
+      </div>
 
       <Card>
         {/* نوار اسکرول افقی بالا (dir=ltr برای رفتار درست در RTL) */}
@@ -256,7 +257,6 @@ export default function RegisterListPage() {
                   <th className="border p-2">بیمه قبلی</th>
                   <th className="border p-2">تعداد ماه پوشش</th>
                   <th className="border p-2">شرکت</th>
-                  <th className="border p-2">ثبت شده</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,7 +291,6 @@ export default function RegisterListPage() {
                     <td className="border p-2">{r.preInsurance}</td>
                     <td className="border p-2">{r.coverMonths}</td>
                     <td className="border p-2">{r.companyName}</td>
-                    <td className="border p-2">{r.regConfirmed}</td>
                   </tr>
                 ))}
               </tbody>

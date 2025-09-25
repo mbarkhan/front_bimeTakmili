@@ -94,7 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     ثبت‌نام بیمه تکمیلی
                   </Link>
                   <Link
-                    href="/dashboard"
+                    href="/user/chngpass"
                     className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
                   >
                     <Lock size={18} className="text-green-600" />

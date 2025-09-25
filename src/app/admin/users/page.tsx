@@ -172,19 +172,23 @@ export default function UsersPage() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">مدیریت کاربران</h1>
+     
+      <div className="flex gap-4">
+       <Input className="flex w-80 bg-red-100" placeholder="جستجوی نام یا کد پرسنلی..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+       <select value={companyFilter} onChange={(e) => setCompanyFilter(Number(e.target.value) || "")}
+                className="flex border rounded px-3 py-2 bg-red-100">
+                <option value="">همه شرکت‌ها</option>
+                {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+       </select>
+       <span className="flex text-sm text-gray-500">تعداد: {filteredUsers.length}</span>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-        <Input type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
-        <Button onClick={handleCSVUpload} disabled={!csvFile || uploading}>
+        <Input className="flex w-1/2 bg-green-100" type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
+        <Button className="bg-green-100 hover:bg-green-500 text-gray-950"onClick={handleCSVUpload} disabled={!csvFile || uploading}>
           {uploading ? "در حال ارسال..." : "ارسال فایل CSV"}
         </Button>
-        <Input placeholder="جستجوی نام یا کد پرسنلی..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-        <select value={companyFilter} onChange={(e) => setCompanyFilter(Number(e.target.value) || "")}
-          className="border rounded px-3 py-2">
-          <option value="">همه شرکت‌ها</option>
-          {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <span className="text-sm text-gray-600">تعداد: {filteredUsers.length}</span>
+        
       </div>
 
       <Card>
@@ -203,8 +207,8 @@ export default function UsersPage() {
               ))}
             </select>
             <select className="border rounded px-3 py-2 text-sm" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: parseInt(e.target.value) })}>
-              <option value={1}>مدیر سیستم</option>
               <option value={2}>کاربر</option>
+              <option value={1}>مدیر سیستم</option>
             </select>
           </div>
           <Button onClick={handleCreateUser} disabled={creating}>

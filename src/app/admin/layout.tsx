@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Menu, LogOut, User, Building, Users, Lock, X, FileEdit, LayoutDashboard } from "lucide-react";
+import { Menu, LogOut, User, Building, Users, Lock, X, FileEdit, LayoutDashboard,Key } from "lucide-react";
 import clsx from "clsx";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -115,8 +115,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <FileEdit size={18} className="text-zinc-600" />
                      فهرست ثبت نام
-                  </Link>
-                  
+                  </Link>                  
                 </nav>
               </div>
 
