@@ -196,7 +196,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         body: JSON.stringify(allRecords),
         });
 
-        if (!res.ok) throw new Error(`خطا در ذخیره رکورد با شناسه`);
+        if (!res.ok) throw new Error(`خطا در ذخیره داده ها`);
         //}
 
         alert(" اطلاعات با موفقیت ذخیره شدند ✅");
@@ -328,11 +328,8 @@ const [records, setRecords] = useState<AnyReg[]>([]);
           </div>
           )}
 
-          {/* جدول اعضای خانواده */}
-
-
-
-          {/* جدول اعضای خانواده */} {familyMembers.length > 0 && ( <div className="mb-8">
+    {/* جدول اعضای خانواده */} 
+     <div className="mb-8">
             <div className="flex justify-between items-center w-full mb-3">
   <h3 className="text-lg font-semibold text-blue-700">اعضای خانواده</h3>
   <button
@@ -348,7 +345,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
                 {renderFamilyTable(familyMembers)}
               </CardContent>
             </Card>
-          </div> )}
+          </div>
 
           {/* دکمه ذخیره نهایی */}
           {<div className="flex justify-center">

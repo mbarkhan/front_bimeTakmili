@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Pencil } from "lucide-react";
 import { Company, User } from "@/types/user";
 import { error } from "console";
+import { body } from "framer-motion/client";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -50,7 +51,7 @@ export default function UsersPage() {
         }
       );
       const data = await res.json();
-      setUsers(data);
+      setUsers(data.users || data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -108,7 +109,7 @@ export default function UsersPage() {
       });
 
       if (!res.ok) {
-        alert("خطا در بارگذاری فایل CSV");
+        alert("خطا در بارگذاری فایل CSV"+ res.text());
         return;
       }
 
@@ -164,10 +165,14 @@ export default function UsersPage() {
     fetchCompanies();
   }, [currentPage, searchTerm]);
 
-  const filteredUsers = users.filter(u =>
-    (u.personelCode?.includes(searchTerm) || "") &&
-    (companyFilter === "" || u.companyId === companyFilter)
-  );
+  const filteredUsers = Array.isArray(users)
+  ? users.filter(
+      (u) =>
+        (u.personelCode?.includes(searchTerm) || u.name?.includes(searchTerm) || u.family?.includes(searchTerm)) &&
+        (companyFilter === "" || u.companyId === companyFilter)
+    )
+  : [];
+
 
   return (
     <div className="p-6 space-y-6">
@@ -264,6 +269,33 @@ export default function UsersPage() {
           </table>
         </CardContent>
       </Card>
+      <Button
+  className="bg-red-600 hover:bg-red-700 text-white"
+  onClick={async () => {
+    if (!confirm("آیا مطمئن هستید که می‌خواهید همه کاربران را به جز ادمین حذف کنید؟")) return;
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/deleteAll`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+      if (res.ok) {
+        alert("همه کاربران به جز ادمین حذف شدند.");
+        fetchUsers(currentPage, searchTerm);
+      } else {
+        const txt = await res.text();
+        alert("خطا در حذف کاربران: " + txt);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("خطایی رخ داد.");
+    }
+  }}
+>
+  حذف همه کاربران (به جز ادمین)
+</Button>
 
       <div className="flex justify-between items-center mt-4">
         <Button variant="outline" onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>قبلی</Button>
