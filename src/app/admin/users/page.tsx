@@ -219,6 +219,29 @@ export default function UsersPage() {
           <Button onClick={handleCreateUser} disabled={creating}>
             {creating ? "در حال ثبت..." : editUserId ? "ذخیره تغییرات" : "ثبت کاربر"}
           </Button>
+{editUserId && (
+  <Button
+    variant="outline"
+    className="ml-2"
+    onClick={() => {
+      setEditUserId(null);
+      setNewUser({
+        ID: 0,
+        personelCode: "",
+        name: "",
+        family: "",
+        mobile: "",
+        password: "",
+        role: 2,
+        companyId: 0,
+      });
+    }}
+  >
+    انصراف
+  </Button>
+)}
+
+
         </CardContent>
       </Card>
 

@@ -64,7 +64,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
       }
       };
 
-      const [companies, setCompanies] = useState<{ id: number; name: string }[]>([]);
+     /* const [companies, setCompanies] = useState<{ id: number; name: string }[]>([]);
         useEffect(() => {
         const fetchCompanies = async () => {
         try {
@@ -80,11 +80,10 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         }
         };
         fetchCompanies();
-        }, []);
+        }, []);*/
 
         useEffect(() => {
         fetchRecords();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []);
 
         const handleDelete = async (id: number | undefined, name: string, family: string) => {

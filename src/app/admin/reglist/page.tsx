@@ -33,6 +33,7 @@ export default function RegisterListPage() {
       });
       const data = await res.json();
       setRecords(Array.isArray(data) ? data : [data]);
+      console.log(data);
     } catch (error) {
       console.error("خطا در بارگذاری اطلاعات:", error);
     } finally {
@@ -43,7 +44,7 @@ export default function RegisterListPage() {
   const handleUpload = async () => {
     if (!file) return;
     if (!confirm("آیا از بارگذاری داده‌ها مطمئن هستید؟")) return;
-    if (!confirm("با بارگذاری داده‌ها کلیه داده‌های قبلی حذف می‌شوند. ادامه می‌دهید؟")) return;
+    //if (!confirm("با بارگذاری داده‌ها کلیه داده‌های قبلی حذف می‌شوند. ادامه می‌دهید؟")) return;
 
     setUploading(true);
     const formData = new FormData();
