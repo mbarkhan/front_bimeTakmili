@@ -19,10 +19,12 @@ export interface Company  {
 export interface RegList{
 
 	ID:number;
-    userPcode:string;
-	user?:   User;
-	name      :       string ;
-	family     :      string ;
+	userId: number;
+    user?:   User;
+	
+	userPcode	:string;
+	name      	:string ;
+	family     	:string ;
 	fatherName  :     string ;
 	birthDate    :    string ;
 	gender       :    number   ;
@@ -40,7 +42,7 @@ export interface RegList{
 	bankCode       :  number ;
 	bankAccount    :  string ;
 	shaba           : string ;
-	bankAccountTp   : number ;
+	bankAccountTp   : string ;
 	bankAccountOwner: string ;
 	mainPersonelCode:  string 
 	mainNationalCode  : string ;

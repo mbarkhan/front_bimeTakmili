@@ -37,6 +37,7 @@ export const relianceStatus: OptionType[] = [
 export const empGroup: number = 3;
 
 export const basicInsurance: OptionType[] = [
+  { key: 144, name: "تامین اجتماعی" },
   { key: 32, name: "بیمه سلامت" },
   { key: 33, name: "سامانه ایزی مد" },
   { key: 5, name: "ایران" },
@@ -46,7 +47,6 @@ export const basicInsurance: OptionType[] = [
   { key: 40, name: "فاقد بیمه گر پایه" },
   { key: 41, name: "ملی صنایع مس ایران" },
   { key: 42, name: "پالایش نفت" },
-  { key: 144, name: "تامین اجتماعی" },
   { key: 145, name: "نیروهای مسلح" },
   { key: 146, name: "کمیته امداد" },
   { key: 19, name: "دی" },
@@ -92,7 +92,7 @@ export const bankNames: OptionType[] = [
   { key: 30, name: "سایر" },
 ];
 
-export const accountType: number = 5;
+export const accountType: string = "5";
 
 export const regReasons: OptionType[] = [
   { key: 23, name: "لیست اولیه" },
@@ -117,7 +117,7 @@ export const empTypes: OptionType[] = [
 
 export const preInsurance: OptionType[]=[
   {key:5, name:"ایران"},
-  {key:0, name:"سایر"}
+  {key:-1, name:"سایر"}
 ];
 
 export const companyTypes: Record<number, string> = {

@@ -109,6 +109,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         const handleAddFamily = () => {
           const newRecord: AnyReg = {
             ID: -(records.length),
+            userId:records[0].userId,
             userPcode: personalCode ?? "",
             shenasname: "",
             phoneNum: "",
@@ -129,7 +130,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
             mobileNum: "",
             empGroupCode: 0,
             bankCode: 0,
-            bankAccountTp: 0,
+            bankAccountTp: "5",
             bankAccountOwner: "",
             mainPersonelCode: "",
             mainNationalCode: records[0].mainNationalCode,
@@ -195,7 +196,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         body: JSON.stringify(allRecords),
         });
 
-        if (!res.ok) throw new Error(`خطا در ذخیره داده ها`);
+        if (!res.ok) throw new Error(`خطا در ذخیره داده ها:`+res.statusText);
         //}
 
         alert(" اطلاعات با موفقیت ذخیره شدند ✅");
