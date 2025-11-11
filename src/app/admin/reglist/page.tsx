@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RegList, Company } from "@/types/user";
 import * as XLSX from "xlsx";
+import { BASE_URL } from "@/lib/api"
 
 export default function RegisterListPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -28,7 +29,7 @@ export default function RegisterListPage() {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/admin`, {
+      const res = await fetch(`${BASE_URL}/register/admin`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
       const data = await res.json();
@@ -51,7 +52,7 @@ export default function RegisterListPage() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/uploadlist`, {
+      const res = await fetch(`${BASE_URL}/register/uploadlist`, {
         method: "POST",
         headers: { Authorization: token ? `Bearer ${token}` : "" },
         body: formData,

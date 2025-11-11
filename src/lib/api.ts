@@ -1,6 +1,6 @@
 // src/lib/api.ts
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.4:8000";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://172.21.65.16:8000";
 
 
 export async function login(personelCode: string, password: string) {

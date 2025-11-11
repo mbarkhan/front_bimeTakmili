@@ -18,7 +18,7 @@ accountType,
 } from "@/types/regTypes";
 import { Pencil, Trash2 } from "lucide-react";
 import { MainEditModal, FamilyEditModal } from "./editModals";
-import { tr } from "framer-motion/client";
+import { BASE_URL } from "@/lib/api"
 
 type AnyReg = RegList;
 
@@ -49,7 +49,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
       return;
       }
       try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/mylist`, {
+      const res = await fetch(`${BASE_URL}/register/mylist`, {
       headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch data");
@@ -63,25 +63,6 @@ const [records, setRecords] = useState<AnyReg[]>([]);
       setLoading(false);
       }
       };
-
-     /* const [companies, setCompanies] = useState<{ id: number; name: string }[]>([]);
-        useEffect(() => {
-        const fetchCompanies = async () => {
-        try {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        if (!res.ok) throw new Error("خطا در دریافت لیست شرکت‌ها");
-        const data = await res.json();
-        setCompanies(data);
-        } catch (err) {
-        console.error(err);
-        }
-        };
-        fetchCompanies();
-        }, []);*/
-
         useEffect(() => {
         fetchRecords();
         }, []);
@@ -94,7 +75,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         if (!confirm(`آیا از حذف "${name} ${family}" مطمئن هستید؟`)) return;
         try {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/del/${id}`, {
+        const res = await fetch(`${BASE_URL}/register/del/${id}`, {
         method: "DELETE",
         headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
@@ -187,7 +168,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         })  
 
         try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/register/update`, {
+        const res = await fetch(`${BASE_URL}/register/update`, {
         method: "PUT",
         headers: {
         "Content-Type": "application/json",
@@ -357,6 +338,23 @@ const [records, setRecords] = useState<AnyReg[]>([]);
               ثبت نهایی
             </button>
           </div>}
+
+          {records.some((r) => r.regConfirmed) && (
+          <div className="flex justify-center mt-3">
+          <a
+          href="#"
+      /*onClick={(e) => {
+        e.preventDefault();
+        handleDownloadPDF();
+      }}*/
+          className="text-blue-600 hover:text-blue-800 underline"
+          >
+          📄 دانلود فایل ثبت‌نام
+        </a>
+        </div>
+        )}
+
+
 
           {/* مودال ویرایش بیمه‌شده اصلی */}
           {editingRecord && (

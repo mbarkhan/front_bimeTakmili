@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Pencil } from "lucide-react";
 import { Company, User } from "@/types/user";
-import { error } from "console";
-import { body } from "framer-motion/client";
+import { BASE_URL } from "@/lib/api"
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -43,7 +42,7 @@ export default function UsersPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/upaginated?${query.toString()}`,
+        `${BASE_URL}/users/upaginated?${query.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +60,7 @@ export default function UsersPage() {
 
   const fetchCompanies = async () => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company`, {
+    const res = await fetch(`${BASE_URL}/company`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
       },
@@ -75,7 +74,7 @@ export default function UsersPage() {
     if (!confirm(`آیا از حذف ${user.name} ${user.family} مطمئن هستید؟`)) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${user.ID}`, {
+      const res = await fetch(`${BASE_URL}/users/${user.ID}`, {
         method: "DELETE",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
@@ -100,7 +99,7 @@ export default function UsersPage() {
 
     setUploading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/uploadusers`, {
+      const res = await fetch(`${BASE_URL}/users/uploadusers`, {
         method: "POST",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
@@ -126,7 +125,7 @@ export default function UsersPage() {
     setCreating(true);
 
     try {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/users${editUserId ? `/${editUserId}` : ""}`;
+      const url = `${BASE_URL}/users${editUserId ? `/${editUserId}` : ""}`;
 
       const method = editUserId ? "PUT" : "POST";
       const finalUser = editUserId ? { ...newUser, ID: editUserId } : newUser;
@@ -298,7 +297,7 @@ export default function UsersPage() {
     if (!confirm("آیا مطمئن هستید که می‌خواهید همه کاربران را به جز ادمین حذف کنید؟")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/deleteAll`, {
+      const res = await fetch(`${BASE_URL}/users/deleteAll`, {
         method: "DELETE",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",

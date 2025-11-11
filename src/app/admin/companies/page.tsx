@@ -3,6 +3,7 @@
 import { companyTypes } from "@/types/regTypes";
 import { Edit2, Edit3, FileEdit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BASE_URL } from "@/lib/api"
 
 type Company = {
   id: number;
@@ -25,7 +26,8 @@ export default function CompanyListPage() {
   const fetchCompanies = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company`, {
+    
+    const res = await fetch(`${BASE_URL}/company`, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
       },
@@ -52,8 +54,8 @@ export default function CompanyListPage() {
     const token = localStorage.getItem("token");
     const method = editingId ? "PUT" : "POST";
     const url = editingId
-      ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/company/${editingId}`
-      : `${process.env.NEXT_PUBLIC_API_BASE_URL}/company`;
+      ? `${BASE_URL}/company/${editingId}`
+      : `${BASE_URL}/company`;
 
     const res = await fetch(url, {
       method,
@@ -96,7 +98,7 @@ export default function CompanyListPage() {
     if (!confirm("آیا از حذف این شرکت مطمئن هستید؟")) return;
 
     const token = localStorage.getItem("token");
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/company/${id}`, {
+    const res = await fetch(`${BASE_URL}/company/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
