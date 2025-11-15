@@ -19,6 +19,9 @@ accountType,
 import { Pencil, Trash2 } from "lucide-react";
 import { MainEditModal, FamilyEditModal } from "./editModals";
 import { BASE_URL } from "@/lib/api"
+import { generatePDF } from "@/utils/generatePDF";
+import PDFTemplate from "@/components/PDFTemplate";
+
 
 type AnyReg = RegList;
 
@@ -339,23 +342,25 @@ const [records, setRecords] = useState<AnyReg[]>([]);
             </button>
           </div>}
 
-          {records.some((r) => r.regConfirmed) && (
-          <div className="flex justify-center mt-3">
-          <a
-          href="#"
-      /*onClick={(e) => {
-        e.preventDefault();
-        handleDownloadPDF();
-      }}*/
-          className="text-blue-600 hover:text-blue-800 underline"
-          >
-          📄 دانلود فایل ثبت‌نام
-        </a>
-        </div>
-        )}
-
-
-
+         {records.length > 0 && records.every((r) => r.regConfirmed) && (
+            <div className="flex justify-center mt-3">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  generatePDF("pdf-content", "reg_Bimeh.pdf");
+                }}
+                className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+              >
+                📄 دانلود فایل ثبت‌نام
+              </a>
+            </div>
+          )}
+              {/* قالب PDF برای دانلود — پنهان از دید کاربر */}
+              <div style={{ display: "none" }}>
+              <PDFTemplate mainInsured={mainInsured} familyMembers={familyMembers} />
+            </div>
+      
           {/* مودال ویرایش بیمه‌شده اصلی */}
           {editingRecord && (
           <MainEditModal editingRecord={editingRecord} setEditingRecord={setEditingRecord} setRecords={setRecords}
@@ -369,8 +374,8 @@ const [records, setRecords] = useState<AnyReg[]>([]);
             basicInsurance={basicInsurance} relations={relations} relianceStatus={relianceStatus} />
           )}
 
-
-
         </div>
+
+        
         );
         }

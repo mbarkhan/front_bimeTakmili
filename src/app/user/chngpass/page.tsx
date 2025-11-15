@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BASE_URL } from "@/lib/api"
 import { body } from "framer-motion/client";
 
 export default function ChangePasswordPage() {
@@ -34,7 +35,7 @@ export default function ChangePasswordPage() {
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/changepass`, {
+      const res = await fetch(`${BASE_URL}/users/changepass`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -45,6 +46,7 @@ export default function ChangePasswordPage() {
           newPassword,
         }),
       });
+      
       const data = await res.json();
 
       if (res.ok) {
