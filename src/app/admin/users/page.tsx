@@ -12,7 +12,6 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [companyFilter, setCompanyFilter] = useState<number | "">("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -167,8 +166,7 @@ export default function UsersPage() {
   const filteredUsers = Array.isArray(users)
   ? users.filter(
       (u) =>
-        (u.personelCode?.includes(searchTerm) || u.name?.includes(searchTerm) || u.family?.includes(searchTerm)) &&
-        (companyFilter === "" || u.companyId === companyFilter)
+        (u.personelCode?.includes(searchTerm) || u.name?.includes(searchTerm) || u.family?.includes(searchTerm)) 
     )
   : [];
 
@@ -178,12 +176,7 @@ export default function UsersPage() {
       <h1 className="text-2xl font-bold">مدیریت کاربران</h1>
      
       <div className="flex gap-4">
-       <Input className="flex w-80 bg-red-100" placeholder="جستجوی نام یا کد پرسنلی..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-       <select value={companyFilter} onChange={(e) => setCompanyFilter(Number(e.target.value) || "")}
-                className="flex border rounded px-3 py-2 bg-red-100">
-                <option value="">همه شرکت‌ها</option>
-                {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-       </select>
+       <Input className="flex w-80 bg-red-100" placeholder="جستجو..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
        <span className="flex text-sm text-gray-500">تعداد: {filteredUsers.length}</span>
       </div>
 

@@ -7,15 +7,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RegList, Company } from "@/types/user";
 import * as XLSX from "xlsx";
 import { BASE_URL } from "@/lib/api"
+import { Undo2} from "lucide-react";
 
 export default function RegisterListPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [records, setRecords] = useState<RegList[]>([]);
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [companyFilter, setCompanyFilter] = useState<string>("");
 
   // refs برای اسکرول بالا/پایین و خود جدول
   const topScrollRef = useRef<HTMLDivElement>(null);
@@ -34,13 +33,40 @@ export default function RegisterListPage() {
       });
       const data = await res.json();
       setRecords(Array.isArray(data) ? data : [data]);
-      console.log(data);
+      
     } catch (error) {
-      console.error("خطا در بارگذاری اطلاعات:", error);
+      alert("خطا در بارگذاری اطلاعات:"+ error);
     } finally {
       setLoading(false);
     }
   };
+
+  
+  const cancelReg = async (canceledR: RegList[]) => {
+  
+          for (let i = 0; i < canceledR.length; i++) {
+             canceledR[i].regConfirmed=false;
+            }
+
+            console.log(canceledR);
+          try {
+          const res = await fetch(`${BASE_URL}/register/update`, {
+          method: "PUT",
+          headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(canceledR),
+          });
+  
+          if (!res.ok) throw new Error(`خطا در ذخیره داده ها:`+res.statusText);
+          //}
+  
+          alert(" ثبت نام لغو گردید ✅");
+          } catch (error) {
+          alert("ذخیره نهایی با خطا مواجه شد ❌");
+          }
+          };
 
   const handleUpload = async () => {
     if (!file) return;
@@ -109,7 +135,7 @@ export default function RegisterListPage() {
 
   useEffect(() => {
     fetchRecords();
-  }, []);
+    }, []);
 
   // محاسبه‌ی عرض واقعی جدول و سینک اسکرول‌ها
   useLayoutEffect(() => {
@@ -159,17 +185,18 @@ export default function RegisterListPage() {
     };
   }, [records]);
 
-  // فیلتر؛ (عین قبل نگه داشتم تا رفتار فعلی‌تون تغییر نکنه)
-  const filteredRecords = records.filter(
-    (r) =>
-      (r.name?.toLowerCase().includes(search.toLowerCase()) || "") &&
-      (r.family?.toLowerCase().includes(search.toLowerCase()) || "") &&
-      (r.nationalCode?.toLowerCase().includes(search.toLowerCase()) || "") &&
-      (r.mobileNum?.toLowerCase().includes(search.toLowerCase()) || "") &&
-      (r.companyName?.toLowerCase().includes(companyFilter.toLowerCase()) || "")
-  );
+ const filteredRecords = records.filter((r) => {
+  const searchMatch =
+    (r.userPcode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (r.name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (r.family?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (r.nationalCode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (r.mobileNum?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (r.companyName?.toLowerCase().includes(search.toLowerCase()) ?? false)     ;
 
-  const uniqueCompanies = Array.from(new Set(records.map((r) => r.companyName)));
+  return searchMatch;
+});
+
 
   return (
     <div className="p-6 space-y-6">
@@ -189,20 +216,9 @@ export default function RegisterListPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <select
-        className="flex w-1/4 border p-2 rounded"
-        value={companyFilter}
-        onChange={(e) => setCompanyFilter(e.target.value)}
-      >
-        <option value="">همه شرکت‌ها</option>
-        {uniqueCompanies.map((companyName, idx) => (
-          <option key={idx} value={companyName}>
-            {companyName}
-          </option>
-        ))}
-      </select>
 
-      <p className="text-sm text-gray-600 mt-2">تعداد رکوردها: {filteredRecords.length}</p>
+
+      <p className="text-sm text-gray-600 mt-2">تعداد : {filteredRecords.length}</p>
       </div>
 
       <Card>
@@ -259,6 +275,7 @@ export default function RegisterListPage() {
                   <th className="border p-2">بیمه قبلی</th>
                   <th className="border p-2">تعداد ماه پوشش</th>
                   <th className="border p-2">شرکت</th>
+                  <th className="border p-2">لغو ثبت نام</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,13 +310,48 @@ export default function RegisterListPage() {
                     <td className="border p-2">{r.preInsurance}</td>
                     <td className="border p-2">{r.coverMonths}</td>
                     <td className="border p-2">{r.companyName}</td>
+                    <td className="px-4 py-3">
+                      { (r.familyRelation===1) && (
+                  <button className="p-1.5 text-blue-500 hover:text-blue-700" onClick={()=> cancelReg(records.filter((Cr) => Cr.userPcode === r.userPcode)) }
+                    >
+                    <Undo2 size={18} />
+                  </button>)}
+                </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
         </CardContent>
-      </Card>
+      </Card>      
+      <Button className="bg-red-600 hover:bg-red-700 text-white"
+          /*onClick={async () => {
+          if (!confirm("آیا مطمئن هستید می خواهید تمام لیست را لغو کنید؟")) return;
+          if (!confirm(" تمام ثبت نام های شرکت"+)) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${BASE_URL}/users/deleteAll`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+      if (res.ok) {
+        alert("همه کاربران به جز ادمین حذف شدند.");
+        //fetchUsers(currentPage, searchTerm);
+      } else {
+        const txt = await res.text();
+        alert("خطا در حذف کاربران: " + txt);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("خطایی رخ داد.");
+    }
+      }}*/
+      >
+          لغو کلیه لیست ثبت نام
+      </Button>
     </div>
   );
 }

@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 {/* User Info */}
                 <div className="text-center border-b pb-4">
-                  <img src="/logo.png" alt="لوگو" className="w-20 h-20 mx-auto mb-2" />
+                  <img src="/images/logo.png" alt="لوگو" className="w-20 h-20 mx-auto mb-2" />
                   <User className="mx-auto mb-1 text-blue-500" />
                   <p className="font-semibold">{username}</p>
                   {personelCode && (

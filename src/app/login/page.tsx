@@ -49,7 +49,7 @@ const [loading, setLoading] = useState(false);
       <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4" dir="rtl">
         <div className="w-full max-w-sm bg-white rounded-xl shadow-md p-6">
           <div className="flex justify-center mb-6">
-            <img src="/logo.png" alt="لوگو" className="w-30 h-30" />
+            <img src="/images/logo.png" alt="لوگو" className="w-30 h-30" />
           </div>
 
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6 font-vazir">

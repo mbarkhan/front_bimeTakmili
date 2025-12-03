@@ -19,7 +19,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100" dir="rtl">
       <h1 className="text-3xl md:text-4xl font-bold text-blue-700 mb-8 text-center">
-        سامانه خدمات اداری و رفاهی گروه باختر
+        سامانه خدمات اداری و رفاهی شرکت پتروشیمی مهاباد
       </h1>
 
       <button

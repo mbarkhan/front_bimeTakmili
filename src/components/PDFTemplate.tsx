@@ -30,15 +30,15 @@ export default function PDFTemplate({ mainInsured, familyMembers }: any) {
       }}
     >
       {/* عنوان و لوگو */}
-      <div style={{ textAlign: "center", marginBottom: "10px" }}>
+      <div style={{ textAlign: "center", marginBottom: "5px" }}>
         <img
           src="/images/logo.png"
           alt="Logo"
           crossOrigin="anonymous"
-          style={{ width: "120px", marginBottom: "20px" }}
+          style={{ width: "120px", marginBottom: "0px" }}
         />
         <h2 style={{ fontWeight: "bold", fontSize: "16px" }}>
-          فرم درخواست ثبت‌نام بیمه تکمیلی درمان ۱۴۰۴
+          درخواست ثبت‌نام بیمه تکمیلی درمان ۱۴۰۴
         </h2>
       </div>
 
@@ -165,7 +165,7 @@ export default function PDFTemplate({ mainInsured, familyMembers }: any) {
           <col style={{ width: "100px" }} />
         </colgroup>
 
-        <thead>
+        <thead >
           <tr style={{ backgroundColor: "#e6e6e6", textAlign: "center" }}>
             <th style={thStyle}>ردیف</th>
             <th style={thStyle}>نام</th>
@@ -182,7 +182,7 @@ export default function PDFTemplate({ mainInsured, familyMembers }: any) {
           </tr>
         </thead>
 
-        <tbody>
+       <tbody style={{ height: "30px" }}>
           {(familyMembers ??[]).map((f: any, i: number) => (
             <tr key={i}>
               <td style={tdStyle}>{i + 1}</td>
@@ -203,8 +203,8 @@ export default function PDFTemplate({ mainInsured, familyMembers }: any) {
       </table>
 
       {/* امضا */}
-      <div style={{ marginTop: "10px", fontSize: "12px" }}>
-        <p>*تاریخ / *امضا / *اثرانگشت</p>
+      <div style={{ marginTop: "15px", fontSize: "12px", textAlign: "right" }}>
+      <p>*تاریخ / *امضا / *اثرانگشت</p>
       </div>
     </div>
   );
@@ -214,7 +214,8 @@ export default function PDFTemplate({ mainInsured, familyMembers }: any) {
 const cellStyle: React.CSSProperties = {
   border: "1px solid #ccc",
   padding: "4px 6px",
-//  minWidth: "70px",
+  textAlign:"center",
+  verticalAlign: "middle",
 };
 
 const thStyle: React.CSSProperties = {

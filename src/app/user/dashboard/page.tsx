@@ -21,6 +21,8 @@ import { MainEditModal, FamilyEditModal } from "./editModals";
 import { BASE_URL } from "@/lib/api"
 import { generatePDF } from "@/utils/generatePDF";
 import PDFTemplate from "@/components/PDFTemplate";
+import ConfirmModal from "@/components/ConfirmModal"; 
+
 
 
 type AnyReg = RegList;
@@ -37,9 +39,17 @@ const [records, setRecords] = useState<AnyReg[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingRecord, setEditingRecord] = useState<AnyReg | null>(null);
   const [editingFamily, setEditingFamily] = useState<AnyReg | null>(null);
+const [openConfirm, setOpenConfirm] = useState(false);
 
   const router = useRouter();
-  const personalCode=localStorage.getItem("personelCode");
+const [personalCode, setPersonalCode] = useState<string | null>(null);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    setPersonalCode(localStorage.getItem("personelCode"));
+  }
+}, []);
+
 
       const getId = (r: AnyReg) =>
       (r as any).ID ?? (r as any).id ?? (r as any).Id ?? undefined;
@@ -90,6 +100,10 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         }
         };
         
+        const FinalConfirmationCheck= ()=>{
+          return records.some((r) => !r.regConfirmed)  //درصورتی که ثبت نهایی شده 
+        }
+
         const handleAddFamily = () => {
           const newRecord: AnyReg = {
             ID: -(records.length),
@@ -141,7 +155,11 @@ const [records, setRecords] = useState<AnyReg[]>([]);
         const openFamilyEditModal = (r: AnyReg) => {
         setEditingFamily({ ...r });
         };
-        const handleFinalSave = async () => {
+
+        const handleFinalSave = async (isFinal:boolean) => {
+
+          if (!FinalConfirmationCheck()) return; //
+          
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         if (!token) {
         router.push("/login");
@@ -167,7 +185,7 @@ const [records, setRecords] = useState<AnyReg[]>([]);
           r.preInsurance=0;
           r.coverMonths=mainInsured[0].coverMonths;
           r.companyName=mainInsured[0].companyName;
-          r.regConfirmed=true;
+          r.regConfirmed=isFinal;
         })  
 
         try {
@@ -229,12 +247,14 @@ const [records, setRecords] = useState<AnyReg[]>([]);
                 <td className="px-4 py-3">{mapValue(bankNames, r.bankCode)}</td>
                 <td className="px-4 py-3">{r.bankAccount}</td>
                 <td className="px-4 py-3">{r.shaba}</td>
+                {FinalConfirmationCheck() && ( //درصورتی که ثبت نهایی شده 
                 <td className="px-4 py-3">
                   <button className="p-1.5 text-blue-500 hover:text-blue-700" onClick={()=> openEditModal(r)}
                     >
                     <Pencil size={18} />
                   </button>
                 </td>
+                )}
               </tr>
               ))}
             </tbody>
@@ -276,8 +296,9 @@ const [records, setRecords] = useState<AnyReg[]>([]);
                   <td className="px-4 py-3">{mapValue(relianceStatus, r.relStatus)}</td>
                   <td className="px-4 py-3">{mapValue(basicInsurance, r.basicInsurance)}</td>
                   <td className="px-4 py-3">{r.insuranceCode}</td>
-                  <td className="px-4 py-3 flex gap-2">
-                    <button className="p-1.5 text-blue-500 hover:text-blue-700" onClick={()=> openFamilyEditModal(r)}
+                  {FinalConfirmationCheck() && ( //درصورتی که ثبت نهایی شده 
+                    <td className="px-4 py-3 flex gap-2">
+                  <button className="p-1.5 text-blue-500 hover:text-blue-700" onClick={()=> openFamilyEditModal(r)}
                       >
                       <Pencil size={18} />
                     </button>
@@ -287,7 +308,9 @@ const [records, setRecords] = useState<AnyReg[]>([]);
                       >
                       <Trash2 size={18} />
                     </button>
-                  </td>
+                    </td>
+                    )}
+                  
                 </motion.tr>
                 ))}
               </AnimatePresence>
@@ -316,11 +339,12 @@ const [records, setRecords] = useState<AnyReg[]>([]);
      <div className="mb-8">
             <div className="flex justify-between items-center w-full mb-3">
   <h3 className="text-lg font-semibold text-blue-700">اعضای خانواده</h3>
+  {FinalConfirmationCheck() && ( //درصورتی که ثبت نهایی شده 
   <button
     className="gap-1 px-3 py-1.5 bg-gray-500 hover:bg-blue-700 text-white rounded-lg shadow transition flex items-center"  
     onClick={handleAddFamily}>
     <span className="text-lg">+</span> افزودن عضو
-  </button>
+  </button>)}
 </div>
 
 
@@ -331,31 +355,55 @@ const [records, setRecords] = useState<AnyReg[]>([]);
             </Card>
           </div>
 
-          {/* دکمه ذخیره نهایی */}
-          {<div className="flex justify-center">
+          {/* دکمه ذخیره موقت */}
+          {FinalConfirmationCheck() && (
+            <div className="flex justify-center">
             <button className="px-6 py-2 bg-purple-400 hover:bg-green-700 text-yellow-300 rounded-lg shadow-md transition"
               onClick={()=> {
-              handleFinalSave()
+              handleFinalSave(false)
               }}
               >
-              ثبت نهایی
+              ثبت موقت
             </button>
-          </div>}
-
-         {records.length > 0 && records.every((r) => r.regConfirmed) && (
-            <div className="flex justify-center mt-3">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  generatePDF("pdf-content", "reg_Bimeh.pdf");
-                }}
-                className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-              >
-                📄 دانلود فایل ثبت‌نام
-              </a>
-            </div>
+          </div>
           )}
+
+         
+            {
+  <div className="flex justify-center mt-3">
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        setOpenConfirm(true);
+      }}
+      className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+    >
+      📄   دریافت فایل ثبت نام
+    </a>
+  </div>
+}
+
+<ConfirmModal
+  open={openConfirm}
+  title="تایید ثبت نهایی"
+  message="پس از دریافت فایل نهایی امکان ویرایش اطلاعات وجود ندارد. آیا مطمئن هستید؟"
+  confirmText="تایید نهایی"
+  cancelText="بازگشت"
+
+  onCancel={() => setOpenConfirm(false)}
+
+  onConfirm={() => {
+    setOpenConfirm(false);
+    handleFinalSave(true);
+    generatePDF(
+      "pdf-content",
+      records[0].mainPersonelCode.toString() + "-reg_Bimeh.pdf"
+    );
+  }}
+/>
+
+          
               {/* قالب PDF برای دانلود — پنهان از دید کاربر */}
               <div style={{ display: "none" }}>
               <PDFTemplate mainInsured={mainInsured} familyMembers={familyMembers} />

@@ -5,6 +5,7 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { RegList } from "@/types/user";
+import { span } from "framer-motion/client";
 
 // ==============================
 // Main Edit Modal
@@ -700,11 +701,21 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
         {/* دکمه‌های پایین مودال */}
         <div className="flex justify-end gap-3 mt-6">
           <button
-            className="px-4 py-2 rounded border"
-            onClick={() => setEditingFamily(null)}
-          >
-            انصراف
-          </button>
+  className="px-4 py-2 rounded border"
+  onClick={() => {
+    // اگر nationalCode خالی بود → این ردیف حذف شود
+    if (!editingFamily?.nationalCode || editingFamily.nationalCode.trim() === "") {
+      setRecords((prev: any) =>
+        prev.filter((p: any) => getId(p) !== getId(editingFamily))
+      );
+    }
+
+    setEditingFamily(null);
+  }}
+>
+  انصراف
+</button>
+
           <button
             className="px-4 py-2 rounded bg-blue-600 text-white"
             onClick={() => {
