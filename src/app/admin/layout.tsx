@@ -10,6 +10,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [username, setUsername] = useState("مدیر");
   const [personelCode, setPersonelCode] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -86,37 +88,55 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 {/* Menu */}
                 <nav className="space-y-2 mt-6">
-                <Link
-                    href="/admin/dashboard"
-                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
-                  >
-                    <LayoutDashboard size={18} className="text-pink-600" />
-                  صفحه اصلی
-                  </Link>
 
-                  <Link
-                    href="/admin/companies"
-                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
-                  >
-                    <Building size={18} className="text-blue-600" />
-                    فهرست شرکت ها
-                  </Link>
-                  <Link
-                    href="/admin/users"
-                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
-                  >
-                    <Users size={18} className="text-green-600" />
-                    فهرست کاربران
-                  </Link>
+  <Link
+    href="/admin/dashboard"
+    className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
+  >
+    <LayoutDashboard size={18} className="text-pink-600" />
+    صفحه اصلی
+  </Link>
 
-                  <Link
-                    href="/admin/reglist"
-                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 p-2 rounded-md"
-                  >
-                    <FileEdit size={18} className="text-zinc-600" />
-                     فهرست ثبت نام
-                  </Link>                  
-                </nav>
+  {/* منوی سرمایه انسانی */}
+  <button
+    onClick={() => setSubMenuOpen(!subMenuOpen)}
+    className="flex items-center justify-between w-full text-gray-700 hover:bg-gray-200 p-2 rounded-md"
+  >
+    <span className="flex items-center gap-2">
+      <Users size={18} className="text-green-600" />
+      سرمایه انسانی
+    </span>
+    {subMenuOpen ? "▲" : "▼"}
+  </button>
+
+  {/* زیرمنو */}
+  {subMenuOpen && (
+    <div className="mr-6 mt-1 space-y-2">
+      <Link
+        href="/admin/users"
+        className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
+      >
+        فهرست کاربران
+      </Link>
+
+      <Link
+        href="/admin/reglist"
+        className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
+      >
+        فهرست ثبت نام بیمه تکمیلی
+      </Link>
+
+      <Link
+        href="/admin/companies"
+        className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
+      >
+        فهرست شرکت ها
+      </Link>
+    </div>
+  )}
+
+</nav>
+
               </div>
 
               {/* Logout */}
