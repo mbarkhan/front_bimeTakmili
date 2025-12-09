@@ -112,18 +112,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   {/* زیرمنو */}
   {subMenuOpen && (
     <div className="mr-6 mt-1 space-y-2">
-      <Link
-        href="/admin/users"
-        className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
-      >
-        فهرست کاربران
-      </Link>
-
+    
       <Link
         href="/admin/reglist"
         className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
       >
         فهرست ثبت نام بیمه تکمیلی
+      </Link>
+    
+      <Link
+        href="/admin/users"
+        className="block text-gray-600 hover:text-black hover:bg-gray-100 p-2 rounded-md"
+      >
+        فهرست کاربران
       </Link>
 
       <Link

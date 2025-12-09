@@ -85,7 +85,14 @@ useEffect(() => {
         alert("این رکورد شناسه حذف ندارد.");
         return;
         }
+
+
         if (!confirm(`آیا از حذف "${name} ${family}" مطمئن هستید؟`)) return;
+        if(id<0)  {
+          setRecords((prev) => prev.filter((r) => getId(r) !== id));
+          return;
+        }
+        
         try {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         const res = await fetch(`${BASE_URL}/register/del/${id}`, {
@@ -379,7 +386,7 @@ useEffect(() => {
       }}
       className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
     >
-      📄   دریافت فایل ثبت نام
+      📄   تایید نهایی و دریافت فایل ثبت نام
     </a>
   </div>
 }

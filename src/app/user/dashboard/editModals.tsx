@@ -133,7 +133,7 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
                 {/* تاریخ تولد */}
                 <label className="flex flex-col">
                     <span className="text-sm text-gray-600">تاریخ تولد</span>
-                    <DatePicker calendar={persian} locale={persian_fa} value={editingRecord.birthDate || "" }
+                    <DatePicker calendar={persian} locale={persian_fa} value={editingRecord.birthDate || ""} maxDate={new Date()} 
                         onChange={(d: any)=> {
                         const v = d ? d.format("YYYY/MM/DD") : "";
                         setEditingRecord({ ...editingRecord, birthDate: v });
@@ -211,7 +211,7 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
                 {/* تاریخ استخدام */}
                 <label className="flex flex-col">
                     <span className="text-sm text-gray-600">تاریخ استخدام</span>
-                    <DatePicker calendar={persian} locale={persian_fa} value={editingRecord.empDate || "" }
+                    <DatePicker calendar={persian} locale={persian_fa} value={editingRecord.empDate || "" } maxDate={new Date()} 
                         onChange={(d: any)=> {
                         const v = d ? d.format("YYYY/MM/DD") : "";
                         setEditingRecord({ ...editingRecord, empDate: v });
@@ -508,6 +508,7 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
               calendar={persian}
               locale={persian_fa}
               value={editingFamily.birthDate || ""}
+              maxDate={new Date()} 
               onChange={(d: any) => {
                 const v = d ? d.format("YYYY/MM/DD") : "";
                 setEditingFamily({ ...editingFamily, birthDate: v });
