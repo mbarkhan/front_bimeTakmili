@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { RegList } from "@/types/user";
-import { span } from "framer-motion/client";
+//import { span } from "framer-motion/client";
 
 // ==============================
 // Main Edit Modal
@@ -387,6 +387,26 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
 }: any) {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
   const mainInsured = records.find((r: RegList) => r.familyRelation === 1);
+  const [disableRelStatus, setDisableRelStatus] = useState(false);
+
+  useEffect(() => {
+  if (!editingFamily || !mainInsured) return;
+
+  // نسبت = همسر (2) و بیمه‌شده اصلی = زن (2)
+  if (editingFamily.familyRelation === 2 && mainInsured.gender === 2) {
+    setEditingFamily((prev:any) => ({
+      ...prev!,
+      relStatus: 2,
+    }));
+    setDisableRelStatus(true);
+  } else {
+    setDisableRelStatus(false);
+  }
+}, [
+  editingFamily?.familyRelation,
+  mainInsured?.gender,
+]);
+
 
   const requiredFields = [
     "name",
@@ -572,6 +592,19 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
                     basicInsurance: mainInsured.basicInsurance || "",
                   };
                 }
+               /* // 👇 اگر نسبت همسر، و اصلی زن باشد
+                if (newRelation === 2 && mainInsured.gender === 2) {
+                  updated = {
+                  ...updated,
+                  relStatus: 2, // تحت تکفل
+                    };
+
+                  setDisableRelStatus(true); // 👈 غیرفعال کردن کمبوباکس
+                  } else {
+                  setDisableRelStatus(false); // 👈 در بقیه حالت‌ها فعال باشد
+                  }*/
+
+
 
                 setEditingFamily(updated);
               }}
@@ -618,31 +651,43 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
           {/* وضعیت تکفل */}
           <label className="flex flex-col">
             <span className="text-sm text-gray-600">وضعیت تکفل</span>
-            <select
-              className={`border rounded p-2 ${
-                fieldErrors["relStatus"]
-                  ? "border-red-500"
-                  : "border-gray-300"
-              }`}
-              value={editingFamily.relStatus ?? ""}
-              onChange={(e) => {
-                setEditingFamily({
-                  ...editingFamily,
-                  relStatus: Number(e.target.value),
-                });
-                setFieldErrors((prev) => ({
-                  ...prev,
-                  relStatus: false,
-                }));
-              }}
-            >
-              <option value="">انتخاب کنید</option>
-              {relianceStatus.map((r: any) => (
-                <option key={r.key} value={r.key}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
+           <select
+  className={`border rounded p-2 transition
+    ${
+      fieldErrors["relStatus"]
+        ? "border-red-500"
+        : "border-gray-300"
+    }
+    ${
+      disableRelStatus
+        ? "bg-gray-200 cursor-not-allowed text-gray-500"
+        : ""
+    }
+  `}
+  value={editingFamily.relStatus ?? ""}
+  disabled={disableRelStatus}  
+  onChange={(e) => {
+    if (disableRelStatus) return;
+
+    setEditingFamily({
+      ...editingFamily,
+      relStatus: Number(e.target.value),
+    });
+
+    setFieldErrors((prev) => ({
+      ...prev,
+      relStatus: false,
+    }));
+  }}
+>
+  <option value="">انتخاب کنید</option>
+  {relianceStatus.map((r: any) => (
+    <option key={r.key} value={r.key}>
+      {r.name}
+    </option>
+  ))}
+</select>
+
           </label>
 
           {/* بیمه پایه */}

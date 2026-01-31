@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RegList, Company } from "@/types/user";
 import * as XLSX from "xlsx";
-import { BASE_URL } from "@/lib/api"
-import { Undo2} from "lucide-react";
+import { BASE_URL } from "@/lib/api";
+import { Undo2 } from "lucide-react";
 
 export default function RegisterListPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -23,7 +23,8 @@ export default function RegisterListPage() {
   const [topWidth, setTopWidth] = useState<number>(0);
   const syncing = useRef(false);
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -33,40 +34,34 @@ export default function RegisterListPage() {
       });
       const data = await res.json();
       setRecords(Array.isArray(data) ? data : [data]);
-      
     } catch (error) {
-      alert("خطا در بارگذاری اطلاعات:"+ error);
+      alert("خطا در بارگذاری اطلاعات:" + error);
     } finally {
       setLoading(false);
     }
   };
 
-  
   const cancelReg = async (canceledR: RegList[]) => {
-  
-          for (let i = 0; i < canceledR.length; i++) {
-             canceledR[i].regConfirmed=false;
-            }
-
-            console.log(canceledR);
-          try {
-          const res = await fetch(`${BASE_URL}/register/update`, {
-          method: "PUT",
-          headers: {
+    console.log(canceledR);
+    try {
+      const res = await fetch(`${BASE_URL}/register/CancelReg`, {
+        method: "PUT",
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(canceledR),
-          });
-  
-          if (!res.ok) throw new Error(`خطا در ذخیره داده ها:`+res.statusText);
-          //}
-  
-          alert(" ثبت نام لغو گردید ✅");
-          } catch (error) {
-          alert("ذخیره نهایی با خطا مواجه شد ❌");
-          }
-          };
+        },
+        body: JSON.stringify(canceledR),
+      });
+
+      if (!res.ok) throw new Error(`خطا در ذخیره داده ها:` + res.statusText);
+      //}
+
+      alert(" ثبت نام لغو گردید ✅");
+
+    } catch (error) {
+      alert("ذخیره نهایی با خطا مواجه شد ❌");
+    }
+  };
 
   const handleUpload = async () => {
     if (!file) return;
@@ -97,25 +92,25 @@ export default function RegisterListPage() {
   const handleExportExcel = () => {
     const mappedRecords = records.map((r) => ({
       "کد پرسنلی": r.userPcode,
-      "نام": r.name,
+      نام: r.name,
       "نام خانوادگی": r.family,
       "نام پدر": r.fatherName,
       "تاریخ تولد": r.birthDate,
-      "جنسیت": r.gender,
+      جنسیت: r.gender,
       "وضعیت تاهل": r.marriedStatus,
       "کد ملی": r.nationalCode,
       "شماره شناسنامه": r.shenasname,
-      "تلفن": r.phoneNum,
-      "همراه": r.mobileNum,
-      "نسبت": r.familyRelation,
-      "تکفل": r.relStatus,
+      تلفن: r.phoneNum,
+      همراه: r.mobileNum,
+      نسبت: r.familyRelation,
+      تکفل: r.relStatus,
       "کد گروه": r.empGroupCode,
       "تاریخ استخدام": r.empDate,
       "بیمه پایه": r.basicInsurance,
       "کد بیمه": r.insuranceCode,
       "کد بانک": r.bankCode,
       "شماره حساب": r.bankAccount,
-      "شبا": r.shaba,
+      شبا: r.shaba,
       "نوع حساب": r.bankAccountTp,
       "صاحب حساب": r.bankAccountOwner,
       "کد پرسنلی اصلی": r.mainPersonelCode,
@@ -124,7 +119,7 @@ export default function RegisterListPage() {
       "نوع استخدام": r.empType,
       "بیمه قبلی": r.preInsurance,
       "تعداد ماه پوشش": r.coverMonths,
-      "شرکت": r.companyName,
+      شرکت: r.companyName,
     }));
 
     const ws = XLSX.utils.json_to_sheet(mappedRecords);
@@ -135,7 +130,7 @@ export default function RegisterListPage() {
 
   useEffect(() => {
     fetchRecords();
-    }, []);
+  }, []);
 
   // محاسبه‌ی عرض واقعی جدول و سینک اسکرول‌ها
   useLayoutEffect(() => {
@@ -185,40 +180,53 @@ export default function RegisterListPage() {
     };
   }, [records]);
 
- const filteredRecords = records.filter((r) => {
-  const searchMatch =
-    (r.userPcode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (r.name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (r.family?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (r.nationalCode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (r.mobileNum?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (r.companyName?.toLowerCase().includes(search.toLowerCase()) ?? false)     ;
+  const filteredRecords = records.filter((r) => {
+    const searchMatch =
+      (r.userPcode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (r.name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (r.family?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (r.nationalCode?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (r.mobileNum?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+      (r.companyName?.toLowerCase().includes(search.toLowerCase()) ?? false);
 
-  return searchMatch;
-});
-
+    return searchMatch;
+  });
 
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold">فهرست ثبت‌نام بیمه تکمیلی</h1>
 
       <div className="flex flex-col md:flex-row gap-4">
-        <Input type="file" accept=".csv" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-        <Button className="bg-cyan-300 hover:bg-cyan-500 text-black" onClick={handleUpload} disabled={!file || uploading}>
+        <Input
+          type="file"
+          accept=".csv"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+        <Button
+          className="bg-cyan-300 hover:bg-cyan-500 text-black"
+          onClick={handleUpload}
+          disabled={!file || uploading}
+        >
           {uploading ? "در حال آپلود..." : "آپلود فایل CSV"}
         </Button>
-        <Button className="bg-lime-300 hover:bg-lime-600 text-black" onClick={handleExportExcel}>خروجی Excel</Button>
+        <Button
+          className="bg-lime-300 hover:bg-lime-600 text-black"
+          onClick={handleExportExcel}
+        >
+          خروجی Excel
+        </Button>
       </div>
-      
+
       <div className="flex gap-4">
-      <Input
-        className="flex w-1/4" placeholder="جستجو در اطلاعات..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-
-      <p className="text-sm text-gray-600 mt-2">تعداد : {filteredRecords.length}</p>
+        <Input
+          className="flex w-1/4"
+          placeholder="جستجو در اطلاعات..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <p className="text-sm text-gray-600 mt-2">
+          تعداد : {filteredRecords.length}
+        </p>
       </div>
 
       <Card>
@@ -243,7 +251,11 @@ export default function RegisterListPage() {
           ) : filteredRecords.length === 0 ? (
             <p className="p-4">هیچ اطلاعاتی وجود ندارد</p>
           ) : (
-            <table ref={tableRef} className="min-w-full text-sm border mt-4" style={{ direction: "rtl" }}>
+            <table
+              ref={tableRef}
+              className="min-w-full text-sm border mt-4"
+              style={{ direction: "rtl" }}
+            >
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border p-2">کد پرسنلی</th>
@@ -275,7 +287,7 @@ export default function RegisterListPage() {
                   <th className="border p-2">بیمه قبلی</th>
                   <th className="border p-2">تعداد ماه پوشش</th>
                   <th className="border p-2">شرکت</th>
-                  <th className="border p-2">لغو ثبت نام</th>
+                  <th className="border p-2">عملیات</th>
                 </tr>
               </thead>
               <tbody>
@@ -311,23 +323,34 @@ export default function RegisterListPage() {
                     <td className="border p-2">{r.coverMonths}</td>
                     <td className="border p-2">{r.companyName}</td>
                     <td className="px-4 py-3">
-                      { (r.familyRelation===1) && (
-                  <button className="p-1.5 text-blue-500 hover:text-blue-700" onClick={()=> cancelReg(records.filter((Cr) => Cr.userPcode === r.userPcode)) }
-                    >
-                    <Undo2 size={18} />
-                  </button>)}
-                </td>
+                      {r.familyRelation === 1 && (
+                        <button
+                          className="p-1.5 text-blue-500 hover:text-blue-700"
+                          title="لغو ثبت نام"
+                          onClick={() =>
+                            cancelReg(
+                              records.filter(
+                                (Cr) => Cr.userPcode === r.userPcode
+                              )
+                            )
+                          }
+                        >
+                          <Undo2 size={18} />
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
         </CardContent>
-      </Card>      
-      <Button className="bg-red-600 hover:bg-red-700 text-white"
-          /*onClick={async () => {
+      </Card>
+      <Button
+        className="bg-red-600 hover:bg-red-700 text-white" disabled
+        /* onClick={async () => {
           if (!confirm("آیا مطمئن هستید می خواهید تمام لیست را لغو کنید؟")) return;
-          if (!confirm(" تمام ثبت نام های شرکت"+)) return;
+          //if (!confirm(" تمام ثبت نام های شرکت")) return;
 
     const token = localStorage.getItem("token");
     try {
@@ -350,7 +373,7 @@ export default function RegisterListPage() {
     }
       }}*/
       >
-          لغو کلیه لیست ثبت نام
+        لغو کلیه لیست ثبت نام
       </Button>
     </div>
   );

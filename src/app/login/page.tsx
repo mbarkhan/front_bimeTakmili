@@ -53,8 +53,12 @@ const [loading, setLoading] = useState(false);
           </div>
 
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6 font-vazir">
-            سامانه خدمات اداری و رفاهی شرکت پتروشیمی مهاباد
+            سامانه خدمات اداری و رفاهی شرکت پتروشیمی مهاباد            
           </h2>
+          <h6 className="text-l text-center text-gray-400 mb-6 font-vazir">
+            - ثبت نام بیمه تکمیلی
+          </h6>
+          
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
