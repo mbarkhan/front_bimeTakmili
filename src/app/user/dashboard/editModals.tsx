@@ -592,8 +592,8 @@ const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
                     basicInsurance: mainInsured.basicInsurance || "",
                   };
                 }
-               /* // 👇 اگر نسبت همسر، و اصلی زن باشد
-                if (newRelation === 2 && mainInsured.gender === 2) {
+               //👇 اگر نسبت همسر، و اصلی زن باشد
+               /* if (newRelation === 2 && mainInsured.gender === 2) {
                   updated = {
                   ...updated,
                   relStatus: 2, // تحت تکفل

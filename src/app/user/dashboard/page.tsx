@@ -27,7 +27,7 @@ type AnyReg = RegList;
 
 const mapValue = (
   arr: { key: number; name: string }[] | undefined,
-  key: number | undefined
+  key: number | undefined,
 ) => {
   if (!arr) return "";
   if (key === undefined || key === null) return "";
@@ -41,14 +41,10 @@ export default function RegListByUserPage() {
   const [editingRecord, setEditingRecord] = useState<AnyReg | null>(null);
   const [editingFamily, setEditingFamily] = useState<AnyReg | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<Record<number, File>>({});
   const router = useRouter();
   const [personalCode, setPersonalCode] = useState<string | null>(null);
-  const [uploadingForId, setUploadingForId] = useState<number | null>(null);
-  const MAX_FILE_SIZE = 300 * 1024;
-
- 
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const fetchRecords = async () => {
     const token =
@@ -66,6 +62,7 @@ export default function RegListByUserPage() {
       const data = await res.json();
       const arr: AnyReg[] = Array.isArray(data) ? data : [data];
       setRecords(arr);
+      setIsAgreed(arr[0].regConfirmed);
     } catch (error) {
       console.error("خطا در واکشی اطلاعات:", error);
       alert("خطا در دریافت اطلاعات ثبت‌نام.");
@@ -87,7 +84,7 @@ export default function RegListByUserPage() {
   const handleDelete = async (
     id: number | undefined,
     name: string,
-    family: string
+    family: string,
   ) => {
     if (id == null) {
       alert("این رکورد شناسه حذف ندارد.");
@@ -203,7 +200,9 @@ export default function RegListByUserPage() {
 
         // حذف از records تا در UI هم ناپدید شود
         setRecords((prev) =>
-          prev.map((x) => (getId(x) === recordId ? { ...x, documents: "" } : x))
+          prev.map((x) =>
+            getId(x) === recordId ? { ...x, documents: "" } : x,
+          ),
         );
 
         alert("مدرک با موفقیت حذف شد ✅");
@@ -215,8 +214,11 @@ export default function RegListByUserPage() {
   };
 
   const handleFinalSave = async (isFinal: boolean) => {
-    if (!FinalConfirmationCheck()){
-      generatePDF( "pdf-content", records[0].mainPersonelCode.toString() + "-reg_Bimeh.pdf" );
+    if (!FinalConfirmationCheck()) {
+      generatePDF(
+        "pdf-content",
+        records[0].mainPersonelCode.toString() + "-reg_Bimeh.pdf",
+      );
       return;
     }
 
@@ -232,7 +234,7 @@ export default function RegListByUserPage() {
     allRecords.forEach((r) => {
       if (r.ID < 0) r.ID = 0;
       r.userPcode = r.mainPersonelCode = personalCode ?? "";
-      r.mainNationalCode = r.shenasname = r.nationalCode;
+      r.shenasname = r.nationalCode;
       r.phoneNum = mainInsured[0].mobileNum;
       r.empGroupCode = empGroup;
       r.bankCode = mainInsured[0].bankCode;
@@ -240,6 +242,7 @@ export default function RegListByUserPage() {
       r.bankAccountOwner = mainInsured[0].bankAccountOwner;
       r.requestReason = 23;
       r.empType = 1;
+      r.mainNationalCode = mainInsured[0].nationalCode;
       r.empDate = mainInsured[0].empDate;
       r.bankAccount = mainInsured[0].bankAccount;
       r.shaba = mainInsured[0].shaba;
@@ -277,9 +280,13 @@ export default function RegListByUserPage() {
       const saved = await res.json();
       setRecords(saved);
 
-      alert("اطلاعات و فایل‌ها با موفقیت ذخیره شدند ✅."); 
-      
-      if (isFinal) generatePDF( "pdf-content", records[0].mainPersonelCode.toString() + "-reg_Bimeh.pdf" );
+      alert("اطلاعات و فایل‌ها با موفقیت ذخیره شدند ✅.");
+
+      if (isFinal)
+        generatePDF(
+          "pdf-content",
+          records[0].mainPersonelCode.toString() + "-reg_Bimeh.pdf",
+        );
 
       // بعد از موفقیت، فایل‌های موقت را خالی کن
       setUploadedFiles({});
@@ -453,8 +460,8 @@ export default function RegListByUserPage() {
                         }));
                       }}
                     />
-                    { ( ([3, 4].includes(r.familyRelation) && r.relStatus == 1) || ([7, 8].includes(r.familyRelation) && calcAgeFromJalaliSimple(r.birthDate)>18) || ([5,6].includes(r.familyRelation)))
-                       && (<label
+                    {documentNedded(r) && (
+                      <label
                         htmlFor={`upload-${getId(r)}`}
                         className="p-1.5 text-green-600 hover:text-green-800 cursor-pointer"
                         title="بارگذاری"
@@ -538,18 +545,67 @@ export default function RegListByUserPage() {
       )}
 
       {
-        <div className="flex justify-center mt-3">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenConfirm(true);
-              handleFinalSave(true)
+        <div className="flex flex-col items-end mt-3 p-4 border rounded-lg bg-gray-50">
+          <p
+            className="font-bold text-gray-800 leading-relaxed text-justify mb-4"
+            style={{
+              fontFamily: "'Vazirmatn', 'IRANSans', 'Tahoma', sans-serif",
             }}
-            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
           >
-            📄 تایید نهایی و دریافت فایل ثبت نام
-          </a>
+            افراد تبعی غیر از همسر، فرزند، پدر و مادر، در صورتی که تحت تکفل
+            نباشند ثبت نام نخواهند شد ضمناً در صورتی که پدر و مادر تحت تکفل
+            هستند لازم است مستندات بیمه ارائه شود. ارائه اصل گواهی اشتغال به
+            تحصیل با تاریخ معتبر برای فرزندان پسر بالای 18 سال و صفحه اول و دوم
+            شناسنامه فرزندان دختر بالای 18 سال به امور ثبت نام الزامی است. در
+            صورت عدم ارائه گواهی های فوق تا پایان مهلت ثبت نام، بیمه تکمیلی برای
+            سال جاری فعال نخواهد گردید.
+            <br />
+            <br />
+          </p>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="finalConfirmation"
+              className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+              checked={isAgreed}
+              disabled={isAgreed}
+              onChange={(e) => setIsAgreed(e.target.checked)}
+            />
+            <label
+              htmlFor="finalConfirmation"
+              className="cursor-pointer font-medium text-gray-700"
+              style={{
+                fontFamily: "'Vazirmatn', 'IRANSans', 'Tahoma', sans-serif",
+              }}
+            >
+              اینجانب با اطلاع کامل از مفاد قرارداد بیمه تکمیلی، خود و افراد
+              تبعی را تحت پوشش بیمه درمان تکمیلی قرارداده و با آگاهی از اینکه
+              این قرارداد یکساله است و تا پایان قرارداد امکان حذف از لیست وجود
+              ندارد، این درخواست را تایید می نمایم. مسئولیت کلیه اطلاعات تکمیل
+              شده در این فرم به عهده اینجانب است و شرکت تعهدی در قبال آن ندارد.
+            </label>
+          </div>
+        </div>
+      }
+      {
+        <div className="flex items-center justify-center space-x-2 space-x-reverse mt-3">
+          <label htmlFor="finalConfirmation" className="cursor-pointer">
+            <button
+              onClick={() => {
+                setOpenConfirm(true);
+                handleFinalSave(true);
+              }}
+              disabled={!isAgreed}
+              className={`px-4 py-2 rounded-md transition-all ${
+                isAgreed
+                  ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              📄 تایید نهایی و دریافت فایل ثبت نام
+            </button>
+          </label>
         </div>
       }
 
@@ -656,6 +712,19 @@ export default function RegListByUserPage() {
   );
 }
 
+export function documentNedded(rec: RegList): boolean {
+  if (
+    ([3, 4].includes(rec.familyRelation) && rec.relStatus == 1) ||
+    ([7, 8].includes(rec.familyRelation) &&
+      calcAgeFromJalaliSimple(rec.birthDate) > 18) ||
+    [5, 6].includes(rec.familyRelation)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function calcAgeFromJalaliSimple(birthDate?: string): number {
   if (!birthDate) return 0;
 
@@ -698,5 +767,5 @@ function calcAgeFromJalaliSimple(birthDate?: string): number {
     age--;
   }
 
-  return  age ;
+  return age;
 }

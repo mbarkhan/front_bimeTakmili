@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RegList, Company } from "@/types/user";
 import * as XLSX from "xlsx";
 import { BASE_URL } from "@/lib/api";
-import { Undo2 } from "lucide-react";
+import { Undo2, Eye, File } from "lucide-react";
+import { documentNedded } from "@/app/user/dashboard/page";
 
 export default function RegisterListPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -22,6 +23,10 @@ export default function RegisterListPage() {
   const tableRef = useRef<HTMLTableElement>(null);
   const [topWidth, setTopWidth] = useState<number>(0);
   const syncing = useRef(false);
+
+  // state های جدید برای مدارک
+  const [selectedUser, setSelectedUser] = useState<RegList | null>(null);
+  const [userDocuments, setUserDocuments] = useState<Document[]>([]);
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -57,16 +62,57 @@ export default function RegisterListPage() {
       //}
 
       alert(" ثبت نام لغو گردید ✅");
-
+      fetchRecords(); // رفرش لیست
     } catch (error) {
       alert("ذخیره نهایی با خطا مواجه شد ❌");
     }
   };
 
+  // تابع برای دانلود همه مدارک
+const handleDownloadAllDocuments = async () => {
+  if (!confirm("آیا از دانلود تمامی مدارک اطمینان دارید؟")) return;
+  
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${BASE_URL}/register/admin/download-all-documents`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('خطا در دانلود فایل‌ها');
+    }
+
+    // دریافت blob و ایجاد لینک دانلود
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `documents_${new Date().toISOString().split('T')[0]}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    //toast.success("دانلود مدارک با موفقیت انجام شد");
+  } catch (error) {
+    console.error("خطا در دانلود مدارک:", error);
+    //toast.error("خطا در دانلود مدارک");
+  }
+};
+
+  // تابع برای دانلود فایل
+  const handleDownloadDocument = async (record: RegList) => {
+    const fullPath = `${BASE_URL}${"/"}${record.documents}`;
+    window.open(fullPath);
+  };
+
   const handleUpload = async () => {
+    //List Upload
     if (!file) return;
     if (!confirm("آیا از بارگذاری داده‌ها مطمئن هستید؟")) return;
-    //if (!confirm("با بارگذاری داده‌ها کلیه داده‌های قبلی حذف می‌شوند. ادامه می‌دهید؟")) return;
 
     setUploading(true);
     const formData = new FormData();
@@ -196,7 +242,7 @@ export default function RegisterListPage() {
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-bold">فهرست ثبت‌نام بیمه تکمیلی</h1>
 
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex md:flex-row gap-4">
         <Input
           type="file"
           accept=".csv"
@@ -209,28 +255,40 @@ export default function RegisterListPage() {
         >
           {uploading ? "در حال آپلود..." : "آپلود فایل CSV"}
         </Button>
-        <Button
-          className="bg-lime-300 hover:bg-lime-600 text-black"
-          onClick={handleExportExcel}
-        >
-          خروجی Excel
-        </Button>
       </div>
 
-      <div className="flex gap-4">
-        <Input
-          className="flex w-1/4"
-          placeholder="جستجو در اطلاعات..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <p className="text-sm text-gray-600 mt-2">
-          تعداد : {filteredRecords.length}
-        </p>
+      <div className="flex justify-between items-center gap-4">
+       
+        <div className="flex items-center gap-4 flex-1">
+          <Input
+            className="w-1/4"
+            placeholder="جستجو در اطلاعات..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <p className="text-sm text-gray-600">
+            تعداد : {filteredRecords.length}
+          </p>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            className="bg-lime-300 hover:bg-lime-600 text-black"
+            onClick={handleExportExcel}
+          >
+            خروجی Excel
+          </Button>
+
+          <Button
+            className="bg-yellow-300 hover:bg-yellow-600 text-black" 
+            onClick={handleDownloadAllDocuments}
+          >
+            دانلود کلیه مدارک
+          </Button>
+        </div>
       </div>
 
       <Card>
-        {/* نوار اسکرول افقی بالا (dir=ltr برای رفتار درست در RTL) */}
         <div
           ref={topScrollRef}
           className="overflow-x-auto"
@@ -287,6 +345,7 @@ export default function RegisterListPage() {
                   <th className="border p-2">بیمه قبلی</th>
                   <th className="border p-2">تعداد ماه پوشش</th>
                   <th className="border p-2">شرکت</th>
+                  <th className="border p-2">مدارک لازم</th>
                   <th className="border p-2">عملیات</th>
                 </tr>
               </thead>
@@ -323,6 +382,23 @@ export default function RegisterListPage() {
                     <td className="border p-2">{r.coverMonths}</td>
                     <td className="border p-2">{r.companyName}</td>
                     <td className="px-4 py-3">
+                      {/* آیکن مشاهده مدارک */}
+                      {documentNedded(r) && (
+                        <button
+                          className="p-1.5 text-green-600 hover:text-green-800"
+                          title="مشاهده مدارک"
+                          onClick={() => handleDownloadDocument(r)}
+                        >
+                          <File
+                            size={18}
+                            color={
+                              r.documents && r.documents !== "" ? "blue" : "red"
+                            }
+                          />
+                        </button>
+                      )}
+
+                      {/* آیکن لغو ثبت نام */}
                       {r.familyRelation === 1 && (
                         <button
                           className="p-1.5 text-blue-500 hover:text-blue-700"
@@ -330,8 +406,8 @@ export default function RegisterListPage() {
                           onClick={() =>
                             cancelReg(
                               records.filter(
-                                (Cr) => Cr.userPcode === r.userPcode
-                              )
+                                (Cr) => Cr.userPcode === r.userPcode,
+                              ),
                             )
                           }
                         >
@@ -346,35 +422,6 @@ export default function RegisterListPage() {
           )}
         </CardContent>
       </Card>
-      <Button
-        className="bg-red-600 hover:bg-red-700 text-white" disabled
-        /* onClick={async () => {
-          if (!confirm("آیا مطمئن هستید می خواهید تمام لیست را لغو کنید؟")) return;
-          //if (!confirm(" تمام ثبت نام های شرکت")) return;
-
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${BASE_URL}/users/deleteAll`, {
-        method: "DELETE",
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
-      if (res.ok) {
-        alert("همه کاربران به جز ادمین حذف شدند.");
-        //fetchUsers(currentPage, searchTerm);
-      } else {
-        const txt = await res.text();
-        alert("خطا در حذف کاربران: " + txt);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("خطایی رخ داد.");
-    }
-      }}*/
-      >
-        لغو کلیه لیست ثبت نام
-      </Button>
     </div>
   );
 }
